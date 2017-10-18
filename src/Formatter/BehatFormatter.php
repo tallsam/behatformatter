@@ -2,20 +2,16 @@
 
 namespace elkan\BehatFormatter\Formatter;
 
-use Behat\Behat\EventDispatcher\Event\AfterFeatureTested;
-use Behat\Behat\EventDispatcher\Event\AfterOutlineTested;
-use Behat\Behat\EventDispatcher\Event\AfterScenarioTested;
-use Behat\Behat\EventDispatcher\Event\AfterStepTested;
-use Behat\Behat\EventDispatcher\Event\BeforeFeatureTested;
 use Behat\Behat\EventDispatcher\Event\BeforeOutlineTested;
-use Behat\Behat\EventDispatcher\Event\BeforeScenarioTested;
+use Behat\Behat\EventDispatcher\Event\FeatureTested;
+use Behat\Behat\EventDispatcher\Event\OutlineTested;
+use Behat\Behat\EventDispatcher\Event\ScenarioTested;
+use Behat\Behat\EventDispatcher\Event\StepTested;
 use Behat\Behat\Tester\Result\ExecutedStepResult;
 use Behat\Testwork\Counter\Memory;
 use Behat\Testwork\Counter\Timer;
-use Behat\Testwork\EventDispatcher\Event\AfterExerciseCompleted;
-use Behat\Testwork\EventDispatcher\Event\AfterSuiteTested;
-use Behat\Testwork\EventDispatcher\Event\BeforeExerciseCompleted;
-use Behat\Testwork\EventDispatcher\Event\BeforeSuiteTested;
+use Behat\Testwork\EventDispatcher\Event\ExerciseCompleted;
+use Behat\Testwork\EventDispatcher\Event\SuiteTested;
 use Behat\Testwork\Output\Exception\BadOutputPathException;
 use Behat\Testwork\Output\Formatter;
 use Behat\Testwork\Output\Printer\OutputPrinter;
@@ -25,7 +21,6 @@ use elkan\BehatFormatter\Classes\Step;
 use elkan\BehatFormatter\Classes\Suite;
 use elkan\BehatFormatter\Printer\FileOutputPrinter;
 use elkan\BehatFormatter\Renderer\BaseRenderer;
-use Behat\Behat\Hook\Scope\AfterStepScope;
 use elkan\BehatFormatter\Context;
 
 
@@ -530,9 +525,9 @@ class BehatFormatter implements Formatter {
 
     //<editor-fold desc="Event functions">
     /**
-     * @param BeforeExerciseCompleted $event
+     * @param ExerciseCompleted $event
      */
-    public function onBeforeExercise(BeforeExerciseCompleted $event)
+    public function onBeforeExercise(ExerciseCompleted $event)
     {
         $this->timer->start();
 
@@ -541,9 +536,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param AfterExerciseCompleted $event
+     * @param ExerciseCompleted $event
      */
-    public function onAfterExercise(AfterExerciseCompleted $event)
+    public function onAfterExercise(ExerciseCompleted $event)
     {
 
         $this->timer->stop();
@@ -553,9 +548,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param BeforeSuiteTested $event
+     * @param SuiteTested $event
      */
-    public function onBeforeSuiteTested(BeforeSuiteTested $event)
+    public function onBeforeSuiteTested(SuiteTested $event)
     {
         $this->currentSuite = new Suite();
         $this->currentSuite->setName($event->getSuite()->getName());
@@ -565,9 +560,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param AfterSuiteTested $event
+     * @param SuiteTested $event
      */
-    public function onAfterSuiteTested(AfterSuiteTested $event)
+    public function onAfterSuiteTested(SuiteTested $event)
     {
 
         $this->suites[] = $this->currentSuite;
@@ -577,9 +572,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param BeforeFeatureTested $event
+     * @param FeatureTested $event
      */
-    public function onBeforeFeatureTested(BeforeFeatureTested $event)
+    public function onBeforeFeatureTested(FeatureTested $event)
     {
         $feature = new Feature();
         $feature->setId($this->featureCounter);
@@ -596,9 +591,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param AfterFeatureTested $event
+     * @param FeatureTested $event
      */
-    public function onAfterFeatureTested(AfterFeatureTested $event)
+    public function onAfterFeatureTested(FeatureTested $event)
     {
         $this->currentSuite->addFeature($this->currentFeature);
         if($this->currentFeature->allPassed()) {
@@ -612,9 +607,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param BeforeScenarioTested $event
+     * @param ScenarioTested $event
      */
-    public function onBeforeScenarioTested(BeforeScenarioTested $event)
+    public function onBeforeScenarioTested(ScenarioTested $event)
     {
         $scenario = new Scenario();
         $scenario->setName($event->getScenario()->getTitle());
@@ -628,9 +623,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param AfterScenarioTested $event
+     * @param ScenarioTested $event
      */
-    public function onAfterScenarioTested(AfterScenarioTested $event)
+    public function onAfterScenarioTested(ScenarioTested $event)
     {
         $scenarioPassed = $event->getTestResult()->isPassed();
 
@@ -653,7 +648,7 @@ class BehatFormatter implements Formatter {
     /**
      * @param BeforeOutlineTested $event
      */
-    public function onBeforeOutlineTested(BeforeOutlineTested $event)
+    public function onBeforeOutlineTested(OutlineTested $event)
     {
         $scenario = new Scenario();
         $scenario->setName($event->getOutline()->getTitle());
@@ -670,9 +665,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param AfterOutlineTested $event
+     * @param OutlineTested $event
      */
-    public function onAfterOutlineTested(AfterOutlineTested $event)
+    public function onAfterOutlineTested(OutlineTested $event)
     {
         $scenarioPassed = $event->getTestResult()->isPassed();
 
@@ -694,9 +689,9 @@ class BehatFormatter implements Formatter {
     }
 
     /**
-     * @param BeforeStepTested $event
+     * @param StepTested $event
      */
-    public function onBeforeStepTested(BeforeStepTested $event)
+    public function onBeforeStepTested(StepTested $event)
     {
         $print = $this->renderer->renderBeforeStep($this);
         $this->printer->writeln($print);
@@ -704,9 +699,9 @@ class BehatFormatter implements Formatter {
 
 
     /**
-     * @param AfterStepTested $event
+     * @param StepTested $event
      */
-    public function onAfterStepTested(AfterStepTested $event)
+    public function onAfterStepTested(StepTested $event)
     {
         $result = $event->getTestResult();
 
